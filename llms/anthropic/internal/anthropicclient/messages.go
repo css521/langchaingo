@@ -47,7 +47,7 @@ type messagePayload struct {
 	// Extended thinking parameters (Claude 3.7+)
 	Thinking *ThinkingConfig `json:"thinking,omitempty"`
 
-	StreamingFunc          func(ctx context.Context, chunk []byte) error                      `json:"-"`
+	StreamingFunc          func(ctx context.Context, chunk []byte) error                 `json:"-"`
 	StreamingReasoningFunc func(ctx context.Context, reasoningChunk, chunk []byte) error `json:"-"`
 }
 
@@ -273,6 +273,9 @@ func parseStreamingMessageResponse(ctx context.Context, r *http.Response, payloa
 				continue
 			}
 			data := strings.TrimPrefix(line, "data: ")
+			if strings.EqualFold(strings.TrimSpace(data), "[DONE]") {
+				continue
+			}
 			event, err := parseStreamEvent(data)
 			if err != nil {
 				eventChan <- MessageEvent{Response: nil, Err: fmt.Errorf("failed to parse stream event: %w", err)}
