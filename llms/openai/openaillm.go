@@ -455,6 +455,8 @@ func ExtractToolParts(msg *ChatMessage) ([]llms.ContentPart, []llms.ToolCall) {
 			content = append(content, p)
 		case llms.ToolCall:
 			toolCalls = append(toolCalls, p)
+		default:
+			content = append(content, p)
 		}
 	}
 	return content, toolCalls
